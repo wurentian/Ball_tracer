@@ -3,6 +3,8 @@
 A multiple-object-tracking game. A few balls flash yellow, then every ball turns the same blue and
 they all start moving. Keep your eyes on the ones that were yellow and point them out when they stop.
 
+**Play it:** https://wurentian.github.io/Ball_tracer/
+
 ## Run it
 
 No build step and no dependencies. Open `index.html` in a browser, or serve the folder:
