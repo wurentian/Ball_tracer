@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0d1b3d">
+<title>Ball Tracer</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Home -->
+<main id="screen-home" class="screen scroll">
+  <header class="hero">
+    <div class="logo" aria-hidden="true"><i></i><i class="y"></i><i></i></div>
+    <h1>Ball Tracer</h1>
+    <p class="sub">Remember the yellow balls. Follow them while they all look the same. Then point them out.</p>
+  </header>
+
+  <div class="menu">
+    <button id="btn-practice" class="btn big">Practice<small>Pick your own settings</small></button>
+    <button id="btn-game" class="btn big primary">Game<small>40 levels · a badge for every win</small></button>
+  </div>
+
+  <section class="card">
+    <h2>Hall of fame</h2>
+    <ol id="fame" class="fame"></ol>
+    <p id="fame-empty" class="muted">No records yet. Play the game to set the first one.</p>
+  </section>
+
+  <section class="card">
+    <h2>Badges <span id="badge-count" class="muted"></span></h2>
+    <div id="badge-grid" class="badge-grid"></div>
+  </section>
+</main>
+
+<!-- Practice setup -->
+<main id="screen-practice" class="screen scroll" hidden>
+  <header class="bar">
+    <button class="btn ghost" data-go="home">‹ Back</button>
+    <h2>Practice</h2>
+    <span></span>
+  </header>
+
+  <section class="card">
+    <div class="opt">
+      <h3>Split windows</h3>
+      <div class="seg" id="opt-windows"></div>
+    </div>
+    <div class="opt">
+      <h3>Balls to track <span class="muted">per window</span></h3>
+      <div class="seg" id="opt-targets"></div>
+      <p class="muted hint" id="targets-hint">3 and 4 balls are available with 1 window only.</p>
+    </div>
+    <div class="opt">
+      <h3>How long the balls move</h3>
+      <div class="seg" id="opt-duration"></div>
+    </div>
+    <div class="opt">
+      <h3>Movement</h3>
+      <div class="seg" id="opt-changing"></div>
+      <p class="muted hint" id="changing-hint"></p>
+    </div>
+  </section>
+
+  <div class="menu">
+    <button id="btn-practice-start" class="btn big primary">Start</button>
+  </div>
+</main>
+
+<!-- Play -->
+<main id="screen-play" class="screen play" hidden>
+  <header class="hud">
+    <button id="btn-quit" class="btn ghost">✕ Quit</button>
+    <div id="hud-title" class="hud-title"></div>
+    <div id="hud-lives" class="hud-lives" aria-label="Lives"></div>
+  </header>
+  <div class="timebar"><span id="timebar"></span></div>
+  <div class="stage"><canvas id="canvas"></canvas></div>
+  <footer class="foot">
+    <div id="msg" class="msg"></div>
+    <div id="actions" class="actions"></div>
+  </footer>
+
+  <div id="overlay" class="overlay" hidden>
+    <div class="modal">
+      <p id="ov-kicker" class="kicker"></p>
+      <div id="ov-badge"></div>
+      <p id="ov-text" class="muted"></p>
+      <button id="ov-next" class="btn big primary"></button>
+    </div>
+  </div>
+</main>
+
+<!-- End of a game run -->
+<main id="screen-end" class="screen scroll" hidden>
+  <header class="hero">
+    <h1 id="end-title"></h1>
+    <p id="end-summary" class="sub"></p>
+  </header>
+  <section class="card">
+    <h2>Badges earned this run</h2>
+    <div id="end-badges" class="badge-row"></div>
+    <p id="end-nobadges" class="muted">None this time.</p>
+  </section>
+  <section class="card">
+    <h2>Record your name</h2>
+    <form id="end-form" class="name-form">
+      <input id="end-name" type="text" maxlength="16" placeholder="Your name" autocomplete="off" aria-label="Your name">
+      <button class="btn primary" type="submit">Save</button>
+    </form>
+  </section>
+  <div class="menu">
+    <button id="btn-end-skip" class="btn ghost">Skip</button>
+  </div>
+</main>
+
+<script src="js/levels.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
