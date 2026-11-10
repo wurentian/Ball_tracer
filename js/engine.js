@@ -8,7 +8,7 @@
 (function () {
   'use strict';
 
-  var CUE_SECONDS = 2;
+  var CUE_SECONDS = 3; // countdown before the balls start to move
   var STEP = 1 / 120;
   var GAP = 10;
 
@@ -93,7 +93,7 @@
       win.x = (i % cols) * (w + GAP);
       win.y = Math.floor(i / cols) * (h + GAP);
       win.w = w; win.h = h; win.r = r;
-      win.speed = scale * 0.5;
+      win.speed = scale * 0.4;
     });
   };
 
@@ -251,6 +251,17 @@
       ctx.strokeStyle = 'rgba(140,170,255,0.28)';
       ctx.lineWidth = 1;
       ctx.stroke();
+
+      if (self.phase === 'cue') {
+        // Countdown, drawn behind the balls so it never hides a target.
+        var n = Math.max(1, Math.ceil(CUE_SECONDS - self.phaseTime));
+        ctx.font = '700 ' + Math.round(Math.min(win.w, win.h) * 0.5) + 'px system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = 'rgba(234,242,255,0.13)';
+        ctx.fillText(String(n), win.w / 2, win.h / 2);
+        ctx.textAlign = 'left';
+      }
 
       win.balls.forEach(function (b) { self.drawBall(b, win.r, pulse); });
 

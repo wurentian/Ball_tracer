@@ -1,7 +1,7 @@
 # Ball Tracer
 
-A multiple-object-tracking game. A few balls flash yellow, then every ball turns the same blue and
-they all start moving. Keep your eyes on the ones that were yellow and point them out when they stop.
+A multiple-object-tracking game. A few balls flash yellow during a 3-second countdown, then every ball
+turns the same blue and they all start moving. Keep your eyes on the ones that were yellow and point them out when they stop.
 
 **Play it:** https://wurentian.github.io/Ball_tracer/
 
@@ -47,8 +47,8 @@ Each stage sets the windows and the balls to track:
 | 9 | 33–36 | Hawk | 3 | 2 |
 | 10 | 37–40 | Mastermind | 4 | 2 |
 
-Inside each stage the four levels are: Bronze (constant speed, 10 s), Silver (constant speed, 20 s),
-Gold (changing speed, 10 s), Diamond (changing speed, 20 s).
+Inside each stage the four levels are: Bronze (constant speed, 5 s), Silver (changing speed, 5 s),
+Gold (constant speed, 10 s), Diamond (changing speed, 10 s).
 
 When a run ends you can record your name. The hall of fame (top 10) and your badge collection are
 kept in the browser's local storage on that device.

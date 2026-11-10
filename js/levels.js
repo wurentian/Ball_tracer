@@ -22,10 +22,10 @@
   ];
 
   var TIERS = [
-    { name: 'Bronze',  color: '#cd8a4b', changing: false, duration: 10 },
-    { name: 'Silver',  color: '#c9d3e0', changing: false, duration: 20 },
-    { name: 'Gold',    color: '#ffcf3d', changing: true,  duration: 10 },
-    { name: 'Diamond', color: '#7fe9ff', changing: true,  duration: 20 }
+    { name: 'Bronze',  color: '#cd8a4b', changing: false, duration: 5 },
+    { name: 'Silver',  color: '#c9d3e0', changing: true,  duration: 5 },
+    { name: 'Gold',    color: '#ffcf3d', changing: false, duration: 10 },
+    { name: 'Diamond', color: '#7fe9ff', changing: true,  duration: 10 }
   ];
 
   var LEVELS = [];
