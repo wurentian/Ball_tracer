@@ -50,8 +50,10 @@ Each stage sets the windows and the balls to track:
 Inside each stage the four levels are: Bronze (constant speed, 5 s), Silver (changing speed, 5 s),
 Gold (constant speed, 10 s), Diamond (changing speed, 10 s).
 
-When a run ends you can record your name. The hall of fame (top 10) and your badge collection are
-kept in the browser's local storage on that device.
+When a run ends you can record your name. Your badge collection is kept in the browser's local
+storage on that device. The hall of fame (top 10) is kept there too; when the game runs as a Claude
+artifact it is saved in the artifact's shared database instead, so everyone who opens the page sees
+the same list.
 
 ## Code
 

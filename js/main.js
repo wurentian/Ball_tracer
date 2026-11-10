@@ -41,8 +41,16 @@
 
   /* ---------- Home ---------- */
 
-  function renderHome() {
+  var FAME_NOTES = {
+    local: 'Saved on this device.',
+    loading: 'Loading the shared list…',
+    shared: 'Shared with everyone who can open this page.',
+    unreachable: 'The shared list can\'t be reached right now. Showing this device\'s records.'
+  };
+
+  function renderFame() {
     var scores = Store.scores();
+    $('fame-note').textContent = FAME_NOTES[Store.scoresStatus()];
     var fame = $('fame');
     fame.textContent = '';
     scores.forEach(function (s) {
@@ -53,7 +61,10 @@
       fame.appendChild(li);
     });
     $('fame-empty').hidden = scores.length > 0;
+  }
 
+  function renderHome() {
+    renderFame();
     var earned = Store.badges();
     $('badge-count').textContent = earned.length + ' / ' + LEVELS.length;
     var grid = $('badge-grid');
@@ -316,5 +327,6 @@
   window.addEventListener('resize', relayout);
   if (window.ResizeObserver) new ResizeObserver(relayout).observe($('canvas'));
 
+  Store.onScoresChange(renderFame);
   goHome();
 })();
