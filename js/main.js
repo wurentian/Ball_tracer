@@ -10,6 +10,7 @@
     round: null,
     level: 1,            // game: level being played
     cleared: 0,          // game: highest level cleared this run
+    hard: false,         // game: Easy or Hard
     lives: BT.MAX_LIVES,
     runBadges: [],
     practice: Object.assign({ windows: 2, targets: 1, duration: 10, changing: false }, Store.practice())
@@ -29,10 +30,12 @@
     return n;
   }
 
-  function badgeEl(level, earned, extraCls) {
-    var b = el('div', 'badge' + (earned ? '' : ' locked') + (extraCls ? ' ' + extraCls : ''));
+  function badgeEl(level, earned, extraCls, hard) {
+    var b = el('div', 'badge' + (earned ? '' : ' locked') + (hard ? ' hard' : '') +
+      (extraCls ? ' ' + extraCls : ''));
     b.style.setProperty('--tier', level.badge.color);
-    b.title = level.badge.name + ' — level ' + level.n + (earned ? '' : ' (locked)');
+    b.title = level.badge.name + ' — level ' + level.n +
+      (earned ? (hard ? ' (earned on Hard)' : '') : ' (locked)');
     b.setAttribute('role', 'img');
     b.setAttribute('aria-label', b.title);
     b.appendChild(el('span', null, level.badge.icon));
@@ -56,7 +59,7 @@
     scores.forEach(function (s) {
       var li = el('li');
       li.appendChild(el('span', 'who', s.name));
-      li.appendChild(el('span', 'lvl', 'Level ' + s.level));
+      li.appendChild(el('span', 'lvl', 'Level ' + s.level + (s.hard ? ' · Hard' : ' · Easy')));
       li.appendChild(el('span', 'when', new Date(s.date).toLocaleDateString()));
       fame.appendChild(li);
     });
@@ -65,8 +68,9 @@
 
   function renderHome() {
     renderFame();
-    var earned = Store.badges();
-    $('badge-count').textContent = earned.length + ' / ' + LEVELS.length;
+    var earned = Store.badges(), earnedHard = Store.hardBadges();
+    $('badge-count').textContent = earned.length + ' / ' + LEVELS.length +
+      (earnedHard.length ? ' · ' + earnedHard.length + ' on Hard ★' : '');
     var grid = $('badge-grid');
     grid.textContent = '';
     BT.STAGES.forEach(function (stage, s) {
@@ -77,7 +81,7 @@
         stage.targets + (stage.targets > 1 ? ' balls each' : ' ball each')));
       var tiers = el('div', 'tiers');
       LEVELS.filter(function (l) { return l.stage === s; }).forEach(function (l) {
-        tiers.appendChild(badgeEl(l, earned.indexOf(l.n) !== -1));
+        tiers.appendChild(badgeEl(l, earned.indexOf(l.n) !== -1, null, earnedHard.indexOf(l.n) !== -1));
       });
       row.appendChild(label);
       row.appendChild(tiers);
@@ -219,8 +223,9 @@
 
   /* ---------- Game ---------- */
 
-  function startGame() {
+  function startGame(hard) {
     state.mode = 'game';
+    state.hard = !!hard;
     state.level = 1;
     state.cleared = 0;
     state.lives = BT.MAX_LIVES;
@@ -230,15 +235,15 @@
 
   function playLevel() {
     var L = LEVELS[state.level - 1];
-    $('hud-title').textContent = 'Level ' + L.n + ' · ' + L.badge.name;
-    startRound(L);
+    $('hud-title').textContent = 'Level ' + L.n + ' · ' + L.badge.name + (state.hard ? ' · Hard' : '');
+    startRound(BT.levelConfig(L, state.hard));
   }
 
   function gameResult(res) {
     var L = LEVELS[state.level - 1];
     if (res.correct === res.total) {
       // All correct: badge, then the next level.
-      Store.addBadge(L.n);
+      Store.addBadge(L.n, state.hard);
       state.runBadges.push(L.n);
       state.cleared = L.n;
       setMsg(found(res) + ' — level cleared!', 'good');
@@ -267,14 +272,15 @@
     $('ov-kicker').textContent = 'Level ' + L.n + ' cleared!';
     var box = $('ov-badge');
     box.textContent = '';
-    box.appendChild(badgeEl(L, true, 'xl'));
+    box.appendChild(badgeEl(L, true, 'xl', state.hard));
     box.appendChild(el('div', 'badge-name', L.badge.name));
     var next = LEVELS[L.n];
     $('ov-text').textContent = last
       ? 'That was the last level. You have tracked them all.'
       : 'Next: ' + next.windows + (next.windows > 1 ? ' windows' : ' window') + ', ' +
         next.targets + (next.targets > 1 ? ' balls each' : ' ball' + (next.windows > 1 ? ' each' : '')) + ', ' +
-        next.duration + ' s, ' + (next.changing ? 'changing speed' : 'constant speed') + '.';
+        next.balls + ' balls in ' + (next.windows > 1 ? 'each window' : 'the window') + ', ' +
+        (next.changing ? 'changing speed' : 'constant speed') + '.';
     $('ov-next').textContent = last ? 'Finish' : 'Next level';
     $('ov-next').onclick = function () {
       $('overlay').hidden = true;
@@ -291,10 +297,10 @@
     $('end-summary').textContent = state.cleared === 0
       ? 'No level cleared this time.'
       : (won ? 'All ' : '') + state.cleared + ' of ' + LEVELS.length + ' levels cleared' +
-        (won ? '.' : ' — you reached level ' + state.level + '.');
+        ' on ' + (state.hard ? 'Hard' : 'Easy') + (won ? '.' : ' — you reached level ' + state.level + '.');
     var row = $('end-badges');
     row.textContent = '';
-    state.runBadges.forEach(function (n) { row.appendChild(badgeEl(LEVELS[n - 1], true)); });
+    state.runBadges.forEach(function (n) { row.appendChild(badgeEl(LEVELS[n - 1], true, null, state.hard)); });
     $('end-nobadges').hidden = state.runBadges.length > 0;
     $('end-name').value = Store.lastName();
     show('end');
@@ -304,7 +310,8 @@
 
   $('btn-practice').addEventListener('click', function () { renderPractice(); show('practice'); });
   $('btn-practice-start').addEventListener('click', startPractice);
-  $('btn-game').addEventListener('click', startGame);
+  $('btn-game').addEventListener('click', function () { startGame(false); });
+  $('btn-game-hard').addEventListener('click', function () { startGame(true); });
   $('btn-end-skip').addEventListener('click', goHome);
 
   document.querySelectorAll('[data-go="home"]').forEach(function (b) {
@@ -319,7 +326,7 @@
   $('end-form').addEventListener('submit', function (e) {
     e.preventDefault();
     var name = $('end-name').value.trim() || 'Anonymous';
-    Store.addScore(name, state.cleared);
+    Store.addScore(name, state.cleared, state.hard);
     goHome();
   });
 

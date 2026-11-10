@@ -10,13 +10,14 @@
 
   var KEY = 'balltracer.v1';
   var MAX_SCORES = 10;
-  var data = { scores: [], badges: [], practice: null, lastName: '' };
+  var data = { scores: [], badges: [], hardBadges: [], practice: null, lastName: '' };
 
   try {
     var raw = JSON.parse(localStorage.getItem(KEY));
     if (raw && typeof raw === 'object') {
       if (Array.isArray(raw.scores)) data.scores = raw.scores;
       if (Array.isArray(raw.badges)) data.badges = raw.badges;
+      if (Array.isArray(raw.hardBadges)) data.hardBadges = raw.hardBadges;
       if (raw.practice && typeof raw.practice === 'object') data.practice = raw.practice;
       if (typeof raw.lastName === 'string') data.lastName = raw.lastName;
     }
@@ -26,9 +27,11 @@
     try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { /* ignore */ }
   }
 
-  // Highest level first; among equals, whoever got there first.
+  // Highest level first; among equals, Hard beats Easy, then whoever got there first.
   function rank(list) {
-    return list.slice().sort(function (a, b) { return b.level - a.level || a.date - b.date; })
+    return list.slice().sort(function (a, b) {
+      return b.level - a.level || (b.hard ? 1 : 0) - (a.hard ? 1 : 0) || a.date - b.date;
+    })
       .slice(0, MAX_SCORES);
   }
 
@@ -47,12 +50,12 @@
     if (!d || typeof d.name !== 'string') return null;
     var level = Math.floor(Number(d.level)), date = Number(d.date);
     if (!(level >= 0 && level <= 40) || !isFinite(date)) return null;
-    return { name: d.name.slice(0, 16), level: level, date: date };
+    return { name: d.name.slice(0, 16), level: level, date: date, hard: d.hard === true };
   }
 
   function upload(score) {
     if (!db || score.shared) return;
-    db.collection('scores').add({ name: score.name, level: score.level, date: score.date })
+    db.collection('scores').add({ name: score.name, level: score.level, date: score.date, hard: !!score.hard })
       .then(function () { score.shared = true; save(); })
       .catch(function () { /* stays on this device; retried on the next visit */ });
   }
@@ -85,8 +88,8 @@
     scores: function () { return rank(shared || data.scores); },
     scoresStatus: function () { return status; },
     onScoresChange: function (fn) { listeners.push(fn); },
-    addScore: function (name, level) {
-      var score = { name: name, level: level, date: Date.now() };
+    addScore: function (name, level, hard) {
+      var score = { name: name, level: level, date: Date.now(), hard: !!hard };
       data.lastName = name;
       data.scores.push(score);
       data.scores = rank(data.scores);
@@ -94,9 +97,14 @@
       upload(score);
       notify();
     },
-    badges: function () { return data.badges.slice(); },
-    addBadge: function (level) {
-      if (data.badges.indexOf(level) === -1) { data.badges.push(level); save(); }
+    // Levels cleared in either mode, and the subset cleared on Hard.
+    badges: function () {
+      return data.badges.concat(data.hardBadges.filter(function (n) { return data.badges.indexOf(n) === -1; }));
+    },
+    hardBadges: function () { return data.hardBadges.slice(); },
+    addBadge: function (level, hard) {
+      var list = hard ? data.hardBadges : data.badges;
+      if (list.indexOf(level) === -1) { list.push(level); save(); }
     },
     practice: function () { return data.practice; },
     setPractice: function (p) { data.practice = p; save(); },

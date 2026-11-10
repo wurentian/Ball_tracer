@@ -1,6 +1,6 @@
 /* One round of tracking: cue -> track -> pick -> reveal.
  *
- *   new BT.Round(canvas, { windows, targets, duration, changing }, callbacks)
+ *   new BT.Round(canvas, { windows, targets, duration, changing, balls?, speed? }, callbacks)
  *
  * callbacks: onPhase(phase), onProgress(fractionLeft), onPicks(complete)
  * round.check() ends the pick phase and returns { correct, total }.
@@ -34,7 +34,7 @@
     this.dead = false;
     this.wins = [];
 
-    var count = cfg.targets <= 2 ? 6 : 8;
+    var count = cfg.balls || (cfg.targets <= 2 ? 6 : 8);
     for (var i = 0; i < cfg.windows; i++) this.wins.push({ balls: [], picks: [], count: count });
     this.layout();
     this.wins.forEach(this.spawn, this);
@@ -80,6 +80,7 @@
     var w = (W - GAP * (cols - 1)) / cols;
     var h = (H - GAP * (rows - 1)) / rows;
 
+    var pace = this.cfg.speed || 1;
     this.wins.forEach(function (win, i) {
       var scale = Math.sqrt(w * h);
       var r = Math.max(9, Math.min(30, scale * 0.06));
@@ -93,7 +94,7 @@
       win.x = (i % cols) * (w + GAP);
       win.y = Math.floor(i / cols) * (h + GAP);
       win.w = w; win.h = h; win.r = r;
-      win.speed = scale * 0.4;
+      win.speed = scale * 0.4 * pace;
     });
   };
 

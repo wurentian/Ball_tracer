@@ -26,7 +26,12 @@ Choose your own settings:
 
 ## Game mode
 
-40 levels in 10 stages, 3 lives.
+40 levels in 10 stages, 3 lives, played on Easy or Hard.
+
+- **Easy**: the balls move for 5 seconds.
+- **Hard**: the balls move for 10 seconds and 1.2× faster. Everything else is the same.
+
+After each level:
 
 - All targets found → you earn that level's badge and move on.
 - Some found → the same level again, no penalty.
@@ -34,7 +39,7 @@ Choose your own settings:
 
 Each stage sets the windows and the balls to track:
 
-| Stage | Levels | Name | Windows | Balls per window |
+| Stage | Levels | Name | Windows | Balls to track per window |
 |---|---|---|---|---|
 | 1 | 1–4 | Spotter | 1 | 1 |
 | 2 | 5–8 | Double Take | 1 | 2 |
@@ -47,8 +52,17 @@ Each stage sets the windows and the balls to track:
 | 9 | 33–36 | Hawk | 3 | 2 |
 | 10 | 37–40 | Mastermind | 4 | 2 |
 
-Inside each stage the four levels are: Bronze (constant speed, 5 s), Silver (changing speed, 5 s),
-Gold (constant speed, 10 s), Diamond (changing speed, 10 s).
+Inside each stage the four levels are:
+
+| Tier | Movement | Balls in each window |
+|---|---|---|
+| Bronze | constant speed | 6 (8 when tracking 3–4) |
+| Silver | changing speed | 6 (8) |
+| Gold | constant speed | 9 (12) — 1.5× as many |
+| Diamond | changing speed | 9 (12) — 1.5× as many |
+
+A badge earned on Hard carries a star. The hall of fame shows the mode next to the level; for the
+same level, Hard ranks above Easy.
 
 When a run ends you can record your name. Your badge collection is kept in the browser's local
 storage on that device. The hall of fame (top 10) is kept there too; when the game runs as a Claude
